@@ -9,12 +9,13 @@ trait IndexSupport {
   val Video = "^Video".r
   val End = "^$".r
 
-  var nums = Vector.empty[Int]
-  var streamNums = Vector.empty[String]
+  
   
   def getStreamIndexes(lines: Array[String]): Vector[Tuple3[String, Int, Int]] = {
-
-		var lineNumber = 0
+    var nums = Vector.empty[Int]
+    var streamNums = Vector.empty[String]
+		
+    var lineNumber = 0
   	lines.foreach { line => 
   		line match {
   	  	case General() => { 
@@ -42,10 +43,11 @@ trait IndexSupport {
 
   	nums = nums :+ lineNumber
 
-  	getTuples()
+  	getTuples(nums, streamNums)
   } 
 
-  def getTuples(): Vector[Tuple3[String, Int, Int]] = {
+  
+  def getTuples(nums: Vector[Int], streamNums: Vector[String]): Vector[Tuple3[String, Int, Int]] = {
     var tuples = Vector.empty[Tuple3[String, Int, Int]]
 	  var m = 0
 	  for(i <- 0 to nums.size - 1){ 

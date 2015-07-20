@@ -7,7 +7,7 @@ import com.sun.jna.Platform
 import com.sun.jna.Pointer
 import com.sun.jna.WString
 
-object Main extends App {
+object Main extends App with FormattingSupport {
 
   val root = new File(args(0))
   //val writer = new FileWriter(new File(args(1)))
@@ -19,20 +19,21 @@ object Main extends App {
 
   def iterate(files: Array[File]): Unit = {
     
-    val sb = new StringBuilder()
+    
 
     files.foreach{ file =>
       if(file.isFile){
-        sb.append(file.getName())
+        println(file.getName())
         val handle: Pointer = MediaInfoLibrary.INSTANCE.New()
         MediaInfoLibrary.INSTANCE.Open(handle, new WString(file.getAbsolutePath()))
-        sb.append(format(MediaInfoLibrary.INSTANCE.Inform(handle).toString()))	
+        val mi = MediaInfoLibrary.INSTANCE.Inform(handle).toString()	
+        val formatter = new Formatter()
+        formatter.format(mi)
+        
       } else if(file.isDirectory) {
         iterate(file.listFiles())
       }
     }
-
-    println(sb.toString)
   }
 
 /*
