@@ -2,33 +2,33 @@ package edu.nyu.acm.miparse
 
 import java.io._
 import java.lang.StringBuilder
-import com.sun.jna.NativeLibrary
-import com.sun.jna.Platform
-import com.sun.jna.Pointer
-import com.sun.jna.WString
+import com.sun.jna.{ NativeLibrary, Platform, Pointer, WString }
+import org.apache.tika.Tika
+import org.apache.tika.mime.MediaType
 
 object Main extends App with FormattingSupport {
 
   val root = new File(args(0))
-  //val writer = new FileWriter(new File(args(1)))
-  //writer.write("report for: " + root.getAbsolutePath() + "\n\n")
-  if(root.exists){ iterate(root.listFiles) }
-  //writer.close
+  val tika = new Tika()
 
-  	 
+  if(root.exists){ 
+    
+    iterate(root.listFiles) 
+
+  }
 
   def iterate(files: Array[File]): Unit = {
-    
-    
-
+  
     files.foreach{ file =>
       if(file.isFile){
-        println(file.getName())
+
+        val mediaType = MediaType.parse(tika.detect(file))
+
         val handle: Pointer = MediaInfoLibrary.INSTANCE.New()
         MediaInfoLibrary.INSTANCE.Open(handle, new WString(file.getAbsolutePath()))
         val mi = MediaInfoLibrary.INSTANCE.Inform(handle).toString()	
         val formatter = new Formatter()
-        formatter.format(mi)
+        formatter.format(mi, file.getName, mediaType)
         
       } else if(file.isDirectory) {
         iterate(file.listFiles())
