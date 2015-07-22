@@ -44,9 +44,9 @@ trait MediaObjectSupport extends IndexSupport {
               val a = new AudioStream(
                 UUID.randomUUID(), 
                 fieldsContains("ID"), 
-                fields("Format"), 
-                if(fields.isDefinedAt("Format/Info")) Some(fields("Format/Info")) else None, 
-                if(fields.isDefinedAt("Format profile")) Some(fields("Format profile")) else None, 
+                fieldsContains("Format"), 
+                fieldsContains("Format/Info"), 
+                fieldsContains("Format profile"), 
                 fieldsContains("Codec ID"))
               audio = audio :+ a
             }
@@ -54,15 +54,15 @@ trait MediaObjectSupport extends IndexSupport {
             case("Video") => {
                 val v = new VideoStream(
                     UUID.randomUUID(), 
-                    fields("ID").toInt, 
-                    fields("Format"), 
-                    fields("Format/Info"), 
-                    fields("Format profile"), 
-                    fields("Codec ID"), 
-                    if(fields.isDefinedAt("Standard")) Some(fields("Standard")) else None, 
-                    fields("Color space"), 
-                    fields("Chroma subsampling"), 
-                    fields("Bit depth"))
+                    fieldsContains("ID"), 
+                    fieldsContains("Format"), 
+                    fieldsContains("Format/Info"), 
+                    fieldsContains("Format profile"), 
+                    fieldsContains("Codec ID"), 
+                    fieldsContains("Standard"), 
+                    fieldsContains("Color space"), 
+                    fieldsContains("Chroma subsampling"), 
+                    fieldsContains("Bit depth"))
                 video = video :+ v
             }
 
