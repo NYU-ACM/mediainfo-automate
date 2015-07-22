@@ -5,20 +5,24 @@ import java.lang.StringBuilder
 import com.sun.jna.{ NativeLibrary, Platform, Pointer, WString }
 import org.apache.tika.Tika
 import org.apache.tika.mime.MediaType
+import edu.nyu.acm.miparse.Protocol._
 
-object Main extends App with FormattingSupport {
+object Main extends App with MediaObjectSupport {
 
   val root = new File(args(0))
   val tika = new Tika()
 
   if(root.exists){ 
     
-    iterate(root.listFiles) 
+    val mediaObjects = iterate(root.listFiles)
+    println(mediaObjects) 
 
   }
 
-  def iterate(files: Array[File]): Unit = {
-  
+  def iterate(files: Array[File]): Vector[MediaObject] = {
+    
+    var mos = Vector.empty[MediaObject]
+
     files.foreach{ file =>
       if(file.isFile){
 
@@ -27,32 +31,16 @@ object Main extends App with FormattingSupport {
         val handle: Pointer = MediaInfoLibrary.INSTANCE.New()
         MediaInfoLibrary.INSTANCE.Open(handle, new WString(file.getAbsolutePath()))
         val mi = MediaInfoLibrary.INSTANCE.Inform(handle).toString()	
-        val formatter = new Formatter()
-        formatter.format(mi, file.getName, mediaType)
+        val mo = new MOFactory().get(mi, file.getName, mediaType)
+        mos = mos :+ mo
         
       } else if(file.isDirectory) {
         iterate(file.listFiles())
       }
     }
+
+    mos
+
   }
 
-/*
-  def write(file: File): Option[String] = {
-    try {
-      val handle: Pointer = MediaInfoLibrary.INSTANCE.New()
-      MediaInfoLibrary.INSTANCE.Open(handle, new WString(file.getAbsolutePath()))
-      val body = MediaInfoLibrary.INSTANCE.Inform(handle).toString()
-      writer.append("----------------------------------------------------------" + "\n")
-      writer.append(file.getName() + "\n")
-      writer.append("----------------------------------------------------------" + "\n")
-      writer.append(body)
-      writer.flush
-      MediaInfoLibrary.INSTANCE.Close(handle)
-      MediaInfoLibrary.INSTANCE.Delete(handle)
-      Some("SUCCESS " + file.getName)
-    } catch {
-      case e: Exception => None      
-    }
-  }
-  */
 }

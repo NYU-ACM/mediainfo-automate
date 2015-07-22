@@ -6,17 +6,14 @@ import java.lang.StringBuilder
 import edu.nyu.acm.miparse.Protocol._
 import org.apache.tika.mime.MediaType
 
-trait FormattingSupport extends IndexSupport {
+trait MediaObjectSupport extends IndexSupport {
 
  
-  class Formatter {
-    def format(textIn: String, filename: String, mediaType: MediaType): Unit = {
+  class MOFactory {
+
+    def get(textIn: String, filename: String, mediaType: MediaType): MediaObject = {
       val lines = textIn.split("\\r?\\n")
-
-      val mediaObject = iterateIndexes(lines, getStreamIndexes(lines), filename, mediaType)   
-
-      println(mediaObject)
-
+      iterateIndexes(lines, getStreamIndexes(lines), filename, mediaType)   
     }
 
     def iterateIndexes(lines: Array[String], indexes: Vector[Tuple3[String, Int, Int]], filename: String, mediaType: MediaType): MediaObject = { 
@@ -26,10 +23,8 @@ trait FormattingSupport extends IndexSupport {
       var video = Vector.empty[VideoStream]
 
       
-      indexes.foreach { index =>
-        
-        val fields = getStream(lines, index)
-               
+      indexes.foreach { index =>    
+        val fields = getStream(lines, index)             
         index._1 match {
             
             case("General") => {
